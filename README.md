@@ -2,7 +2,7 @@
 
 Arduino-based drum machine and master keyboard, with MIDI support and sound synthesis.
 Developed as part of my Italian technical high school (Istituto Tecnico Industriale Statale) final project.
-Entry on official Arduino Forum: http://forum.arduino.cc/index.php?topic=104901.0
+[Entry on official Arduino Forum](http://forum.arduino.cc/index.php?topic=104901.0)
 
 ## Installation
 
