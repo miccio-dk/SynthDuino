@@ -4,10 +4,6 @@
   Rilasciata sotto i termini della GNU GPL v3.0 o successive
   
   TO DO:
-  - aggiungere le azioni da svolgere nei singoli menù
-  - gestione delle impostazioni dei pads
-  - suona?!?
-  - algoritmi per far suonare le note nelle tonalità
   - trasferire il database del menu su eeprom
   
   DONE:
@@ -21,6 +17,11 @@
   - 18/03 creata libreria settings, synthesis e pads
   - 19/03 aggiunta la gestione del multiplexer
   - 23/03 aggiunto algoritmo per la creazione di forme d'onda
+  -       ottimizzazione delle librerie, stesura della documentazione
+  - 07/06 implementata funzionalità drum
+  - 13/06 implementata la funzionalità midi
+  - 14/06 implementate le funzioni per il controllo delle note sintetizzate
+  - 15/06 implementata la funzionalità piano
 */
 
 #include <LiquidCrystal.h>
@@ -29,6 +30,7 @@
 #include "Settings.h"
 #include "Synthesis.h"
 #include "Play.h"
+#include "Pads.h"
 
 // database contenente le voci del menù
 MenuItem menu[] = {
@@ -62,11 +64,17 @@ char *lst_waveform[] = {" SINE", "SQUARE", " RECT", "TRIANG", " SAW", NULL};
 char *lst_tonality[] = {"FREE", "C Maj", "G Maj", "D Maj", "A Maj", "A min", "D min", "G min", "C min", "G blue", "E blue", NULL};
 
 // preset delle varie impostazioni
-Setting default_set = {1, 3, false, 1, 4, 180, 1};
-PadSetting pads[8];
-
-// variabili relative al midi
-Midi midi(default_set.channel);
+Setting default_set = {1, 4, false, 1, 4, 180, 1};
+PadSetting pads[8] = {
+  {35, 127},
+  {37, 127},
+  {38, 127},
+  {42, 96},
+  {46, 78},
+  {48, 110},
+  {51, 110},
+  {49, 80}
+};
 
 // variabili relative alla sintesi sonora
 byte wave[SAMPLE_LEN];
@@ -82,15 +90,18 @@ void setup()
   initSynth();
   initDisplay();
   
-  Serial.begin(9600);
+  //inizializza i pin usati dal multiplexer
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
+  pinMode(10, OUTPUT);
+  pinMode(7, INPUT);
   
   // carica impostazioni di default
   loadWave(wave, default_set.waveform);
-  midi._canale = default_set.channel;
-  midi.prgChange(default_set.patch);
     
   showIntro();
 }
+
 
 void loop()
 {
@@ -146,16 +157,23 @@ void loop()
 // quella corrispondente alla variabile action
 void doSomething(byte action)
 {
+  byte selected_pad = 255;
   switch(action)
   {
-    case 5:  break;
-    case 6:  break;
-    case 8:  break;
-    case 11: break;
+    case 5:  selected_pad = chosePad();
+             if(selected_pad != 255)
+               editPadSettings(&pads[selected_pad-1], selected_pad);
+             break;
+    case 6:  playMidiDrum(default_set, pads);
+             break;
+    case 8:  playWave(default_set, lst_tonality);
+             break;
+    case 11: playMidi(default_set, lst_tonality);
+             break;
     case 12: editSettingT(getMenuTitle(getCurrent_menu(), menu), "attiva sensibilita'", &default_set.sens, lst_sens);
              break;
     case 13: editSettingN(getMenuTitle(getCurrent_menu(), menu), "canale midi in uso", &default_set.channel, 1, 16);
-             midi._canale = default_set.channel-1;
+             //midi._canale = default_set.channel-1;
              break;
     case 14: editSettingN(getMenuTitle(getCurrent_menu(), menu), "sensibilita' minima", &default_set.threshold, 0, 250);
              break;
@@ -171,37 +189,12 @@ void doSomething(byte action)
     case 19: editSettingT(getMenuTitle(getCurrent_menu(), menu), "tonalita' attiva", &default_set.tonality, lst_tonality);
              break;
     case 20: editSettingN(getMenuTitle(getCurrent_menu(), menu), "canale midi in uso", &default_set.channel, 1, 16);
-             midi._canale = default_set.channel-1;
+             //midi._canale = default_set.channel-1;
              break;
     case 21: editSettingN(getMenuTitle(getCurrent_menu(), menu), "banco midi attivo", &default_set.patch, 0, 127);
-             midi.prgChange(default_set.patch);
+             //midi.prgChange(default_set.patch);
              break;
     
     default: break;
   }
 }
-
-// ISR
-// istruzioni dell'Interrupt Service Routine usate per la generazione di forme d'onda
-ISR(TIMER1_COMPA_vect)
-{
-  /* timer1 ISR.  Every time it is called it sets the speaker pin 
-   *  to the next value in playbuffer[].  frequency modulation is done by changing
-   *  the timing between successive calls of this function, e.g. for a 1KHz tone,
-   *  set the timing so that it runs through playbuffer[] 1000 times a second. */
-   
-  // reset waveindex if it has reached the end of the array
-  if (waveindex > SAMPLE_LEN - 1) 
-    waveindex = 0;
-  
-  // Set timer 2 PWM duty cycle to next value in array. 
-  // OCR2B is the register corresponding to duty cycle for PWM pin 3.
-  OCR2B = wave[waveindex]; 
-
-  // increment array index
-  waveindex++;
-  
-  // set timer 1 compare match to new value of period.
-  OCR1A = period;
-}
-

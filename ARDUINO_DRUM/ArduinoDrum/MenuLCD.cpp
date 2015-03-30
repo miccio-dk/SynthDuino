@@ -92,6 +92,20 @@ void menuPrintSetting(String title, String val, String descr)
 }
 
 
+// menuPrint2Settings
+// stampa la schermata della modifica di due impostazioni (usata dai pad)
+void menuPrint2Settings(String title, String val1, String val2)
+{
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print(title);
+  lcd.setCursor(0, 1);
+  lcd.print(val1);
+  lcd.setCursor(0, 2);
+  lcd.print(val2);
+}
+
+
 // getFirstOption
 // restituisce l'id della prima voce del menu
 byte getFirstOption(byte submenu, MenuItem *menu)
@@ -158,6 +172,23 @@ void showIntro()
   lcd.print("##################### ARDUINO DRUM 0.2 #");
   lcd.print("# Riccardo Miccini #####################");
   while(buttonCheck(0) != SEL){}
+}
+
+// showText
+// mostra un
+void showText(String str1, String str2, String str3, String str4)
+{
+  byte i;
+  lcd.clear();
+  
+  lcd.setCursor(0, 0);
+  lcd.print(str1);
+  lcd.setCursor(0, 1);
+  lcd.print(str2);
+  lcd.setCursor(0, 2);
+  lcd.print(str3);
+  lcd.setCursor(0, 3);
+  lcd.print(str4);
 }
 
 // Funzioni Varie

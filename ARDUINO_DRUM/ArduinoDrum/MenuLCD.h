@@ -29,12 +29,15 @@ typedef struct
 void initDisplay();
 void menuPrint(byte submenu, byte sel, MenuItem *menu);
 void menuPrintSetting(String title, String val, String descr);
+void menuPrint2Settings(String title, String val1, String val2);
 byte getFirstOption(byte submenu, MenuItem *menu);
 byte getLastOption(byte submenu, MenuItem *menu);
 byte getPreviousMenu(byte submenu, MenuItem *menu);
 String getMenuTitle(byte submenu, MenuItem *menu);
 byte buttonCheck(byte pin);
 void showIntro();
+void showText(String str1, String str2, String str3, String str4);
+
 // setters
 void setMenu_lenght(byte n);
 void setCurrent_menu(byte n);

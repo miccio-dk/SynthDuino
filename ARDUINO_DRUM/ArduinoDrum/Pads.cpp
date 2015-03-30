@@ -22,3 +22,19 @@ void scanPads(byte *vet, byte analog_pin, byte pin_a, byte pin_b, byte pin_c)
     vet[i] = analogRead(analog_pin);
   }
 }
+
+// scanDigitalPads
+// gestisce il multiplexer al quale sono connessi i pad (versione digitale)
+void scanDigitalPads(boolean *vet, byte digital_pin, byte pin_a, byte pin_b, byte pin_c)
+{
+  int i;
+  
+  for (i=0; i<8; i++)
+  {
+    digitalWrite(pin_a, bitRead(i,0));
+    digitalWrite(pin_b, bitRead(i,1));
+    digitalWrite(pin_c, bitRead(i,2));
+    
+    vet[i] = digitalRead(digital_pin);
+  }
+}

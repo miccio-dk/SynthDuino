@@ -23,6 +23,10 @@
 #define Gpm  9
 #define Epm  10
 
+// identificatori del sottomenu pad
+#define NOTE  5
+#define VELO  10
+
 // impostazioni pad
 typedef struct
 {
@@ -44,5 +48,8 @@ typedef struct
 
 void editSettingT(String title, String descr, byte *val, char *list[]);
 void editSettingN(String title, String descr, byte *val, byte min, byte max);
+
+byte chosePad();
+void editPadSettings(PadSetting *set, byte n_pad);
 
 #endif

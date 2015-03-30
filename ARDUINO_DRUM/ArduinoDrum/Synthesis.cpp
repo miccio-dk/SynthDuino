@@ -1,5 +1,5 @@
 /*
-  Synthesis.cpp - Libreria per la sintesi di suoni e forme d'onda
+  Synthesis.cpp - Libreria per la sintesi di 
   Riccardo Miccini, Davide Montini - 18/03/2012
   Rilasciata sotto i termini della GNU GPL v3.0 o successive
     
@@ -11,7 +11,7 @@
 #include "Synthesis.h"
 
 // loadWave
-// carica la forma d'onda richiesta nel vettore 'vet'
+// carica la forma d'onda richiesta n el vettore 'vet'
 void loadWave(byte *vet, byte wave)
 {
   switch(wave)

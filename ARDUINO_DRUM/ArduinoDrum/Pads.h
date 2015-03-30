@@ -10,5 +10,6 @@
 #include "Arduino.h"
 
 void scanPads(byte *vet, byte analog_pin, byte pin_a, byte pin_b, byte pin_c);
+void scanDigitalPads(boolean *vet, byte digital_pin, byte pin_a, byte pin_b, byte pin_c);
 
 #endif
